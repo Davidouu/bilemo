@@ -16,28 +16,14 @@ class UserClientRepository extends ServiceEntityRepository
         parent::__construct($registry, UserClient::class);
     }
 
-    //    /**
-    //     * @return UserClient[] Returns an array of UserClient objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function paginateUserClients(int $page, int $limit, $user): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->where('c.user = :user')
+            ->setParameter('user', $user);
 
-    //    public function findOneBySomeField($value): ?UserClient
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+    }
 }
