@@ -4,7 +4,38 @@ namespace App\Entity;
 
 use App\Repository\UserClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/*
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_user_client_show",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ * )
+ *
+ */
+/*
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_user_client_edit",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ * )
+ *
+ */
+/*
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_user_client_delete",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ * )
+ *
+ */
 #[ORM\Entity(repositoryClass: UserClientRepository::class)]
 class UserClient
 {
