@@ -23,6 +23,7 @@
         "willdurand/hateoas-bundle": "*"
     },
     "require-dev": {
+        "laravel/pint": "^1.16",
         "symfony/maker-bundle": "^1.59"
     },
     "config": {

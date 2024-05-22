@@ -17,29 +17,42 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UserClientController extends AbstractController
 {
     #[Route('/api/clients', name: 'app_user_client', methods: ['GET'])]
-    public function index(Request $request, UserClientRepository $userClientRepository, SerializerInterface $serializer): JsonResponse
-    {
+    public function index(
+        Request $request,
+        UserClientRepository $userClientRepository,
+        SerializerInterface $serializer
+    ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 10);
 
         $userClients = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
         $jsonUserClients = $serializer->serialize($userClients, 'json');
-        
+
         return new JsonResponse($jsonUserClients, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
-    public function show($id, UserClientRepository $userClientRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $userClient = $userClientRepository->findOneBy(['id' => $id, 'user' => $this->getUser()]);
+    public function show(
+        UserClient $userClient,
+        SerializerInterface $serializer
+    ): JsonResponse {
+        if ($userClient->getUser() !== $this->getUser()) {
+            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+        }
+
         $jsonUserClient = $serializer->serialize($userClient, 'json');
-        
+
         return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/clients', name: 'app_user_client_create', methods: ['POST'])]
-    public function create(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
-    {
+    public function create(
+        Request $request,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager,
+        UrlGeneratorInterface $urlGenerator
+    ): JsonResponse {
         $userClient = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
         $errors = $validator->validate($userClient);
@@ -54,9 +67,43 @@ class UserClientController extends AbstractController
         $entityManager->flush();
 
         $jsonUserClient = $serializer->serialize($userClient, 'json');
-        
-        $location = $urlGenerator->generate('app_user_client_show', ['id' => $userClient->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $location = $urlGenerator->generate(
+            'app_user_client_show',
+            ['id' => $userClient->getId()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         return new JsonResponse($jsonUserClient, Response::HTTP_CREATED, ["Location" => $location], true);
+    }
+
+    #[Route('/api/clients/{id}', name: 'app_user_client_edit', methods: ['PUT'])]
+    public function edit(
+        UserClient $userClient,
+        Request $request,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        if ($userClient->getUser() !== $this->getUser()) {
+            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+        }
+
+        $newUserClinetDatas = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
+
+        $userClient->setEmail($newUserClinetDatas->getEmail());
+        $userClient->setFirstname($newUserClinetDatas->getFirstname());
+        $userClient->setLastname($newUserClinetDatas->getLastname());
+
+        $errors = $validator->validate($userClient);
+
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+
+        $entityManager->persist($userClient);
+        $entityManager->flush();
+
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 }
