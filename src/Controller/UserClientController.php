@@ -106,4 +106,19 @@ class UserClientController extends AbstractController
 
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
+
+    #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
+    public function delete(
+        UserClient $userClient,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        if ($userClient->getUser() !== $this->getUser()) {
+            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+        }
+
+        $entityManager->remove($userClient);
+        $entityManager->flush();
+
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+    }
 }
