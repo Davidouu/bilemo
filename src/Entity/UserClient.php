@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\UserClientRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\Validator\Constraints as Assert;
 
-/*
+/**
  * @Hateoas\Relation(
  *      "self",
  *      href = @Hateoas\Route(
@@ -37,6 +39,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *
  */
 #[ORM\Entity(repositoryClass: UserClientRepository::class)]
+#[UniqueEntity(fields: 'email', message: 'L\'adresse email est déjà utilisée')]
 class UserClient
 {
     #[ORM\Id]
@@ -45,12 +48,16 @@ class UserClient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(['message' => 'Vous devez inscrire un email.'])]
+    #[Assert\Email(message: 'Veuillez saisir une adresse email valide.')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(['message' => 'Vous devez inscrire un prénom.'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(['message' => 'Vous devez inscrire un nom.'])]
     private ?string $lastname = null;
 
     #[ORM\ManyToOne(inversedBy: 'userClients')]
