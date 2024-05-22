@@ -17,10 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      ),
  * )
  *
- */
-/*
  * @Hateoas\Relation(
- *      "self",
+ *      "update",
  *      href = @Hateoas\Route(
  *          "app_user_client_edit",
  *          parameters = { "id" = "expr(object.getId())" }
@@ -30,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 /*
  * @Hateoas\Relation(
- *      "self",
+ *      "delete",
  *      href = @Hateoas\Route(
  *          "app_user_client_delete",
  *          parameters = { "id" = "expr(object.getId())" }
