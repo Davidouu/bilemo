@@ -34,9 +34,9 @@ class MobileController extends AbstractController
                 $item->tag("mobilesCache");
                 $item->expiresAfter(86400);
                 $context = SerializationContext::create();
-                $bookList = $mobileRepository->paginateMobiles($page, $limit);
+                $mobileList = $mobileRepository->paginateMobiles($page, $limit);
 
-                return $serializer->serialize($bookList, 'json', $context);
+                return $serializer->serialize($mobileList, 'json', $context);
             }
         );
 
