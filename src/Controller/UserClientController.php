@@ -37,9 +37,9 @@ class UserClientController extends AbstractController
                 $item->tag("clientsCache");
                 $item->expiresAfter(86400);
                 $context = SerializationContext::create();
-                $bookList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
+                $mobileList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
 
-                return $serializer->serialize($bookList, 'json', $context);
+                return $serializer->serialize($mobileList, 'json', $context);
             }
         );
 
@@ -69,7 +69,7 @@ class UserClientController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         TagAwareCacheInterface $cache
     ): JsonResponse {
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $userClient = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
@@ -108,7 +108,7 @@ class UserClientController extends AbstractController
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $newUserClinetDatas = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
@@ -138,7 +138,7 @@ class UserClientController extends AbstractController
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $entityManager->remove($userClient);
         $entityManager->flush();
