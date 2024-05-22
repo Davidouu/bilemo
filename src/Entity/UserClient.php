@@ -25,8 +25,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      ),
  * )
  *
- */
-/*
  * @Hateoas\Relation(
  *      "delete",
  *      href = @Hateoas\Route(
