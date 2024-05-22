@@ -18,9 +18,18 @@ class UserClientController extends AbstractController
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 10);
 
-        $mobiles = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
-        $jsonMobiles = $serializer->serialize($mobiles, 'json');
+        $userClients = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
+        $jsonUserClients = $serializer->serialize($userClients, 'json');
         
-        return new JsonResponse($jsonMobiles, Response::HTTP_OK, [], true);
+        return new JsonResponse($jsonUserClients, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
+    public function show($id, UserClientRepository $userClientRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $userClient = $userClientRepository->findOneBy(['id' => $id, 'user' => $this->getUser()]);
+        $jsonUserClient = $serializer->serialize($userClient, 'json');
+        
+        return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
     }
 }
