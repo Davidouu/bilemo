@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\UserClient;
 use App\Repository\UserClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class UserClientController extends AbstractController
 {
@@ -20,13 +23,25 @@ class UserClientController extends AbstractController
     public function index(
         Request $request,
         UserClientRepository $userClientRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 10);
 
-        $userClients = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
-        $jsonUserClients = $serializer->serialize($userClients, 'json');
+        $idCache = "allUserClients-" . $page . "-" . $limit;
+
+        $jsonUserClients = $cache->get(
+            $idCache,
+            function (ItemInterface $item) use ($userClientRepository, $page, $limit, $serializer) {
+                $item->tag("clientsCache");
+                $item->expiresAfter(86400);
+                $context = SerializationContext::create();
+                $bookList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
+
+                return $serializer->serialize($bookList, 'json', $context);
+            }
+        );
 
         return new JsonResponse($jsonUserClients, Response::HTTP_OK, [], true);
     }
@@ -51,8 +66,11 @@ class UserClientController extends AbstractController
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
+        $cache->invalidateTags(["booksCache"]);
+
         $userClient = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
         $errors = $validator->validate($userClient);
@@ -83,11 +101,14 @@ class UserClientController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
         if ($userClient->getUser() !== $this->getUser()) {
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
+
+        $cache->invalidateTags(["booksCache"]);
 
         $newUserClinetDatas = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
@@ -110,11 +131,14 @@ class UserClientController extends AbstractController
     #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
     public function delete(
         UserClient $userClient,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
         if ($userClient->getUser() !== $this->getUser()) {
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
+
+        $cache->invalidateTags(["booksCache"]);
 
         $entityManager->remove($userClient);
         $entityManager->flush();
