@@ -7,6 +7,7 @@ use App\Repository\UserClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,14 @@ class UserClientController extends AbstractController
      * This call returns a list of paginate user clients, default limit is 10, and default page is 1.
      */
     #[Route('/api/clients', name: 'app_user_client', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a list of user clients',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
     #[OA\Tag(name: 'User clients')]
     public function index(
         Request $request,
@@ -59,6 +68,14 @@ class UserClientController extends AbstractController
      * This call returns a user client by id.
      */
     #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a user client',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
     #[OA\Tag(name: 'User clients')]
     public function show(
         UserClient $userClient,
@@ -79,6 +96,10 @@ class UserClientController extends AbstractController
      * This call creates a user client.
      */
     #[Route('/api/clients', name: 'app_user_client_create', methods: ['POST'])]
+    #[OA\Response(
+        response: 201,
+        description: 'Returns status 201 : created',
+    )]
     #[OA\Tag(name: 'User clients')]
     public function create(
         Request $request,
@@ -120,6 +141,14 @@ class UserClientController extends AbstractController
      * This call edits a user client by id.
      */
     #[Route('/api/clients/{id}', name: 'app_user_client_edit', methods: ['PUT'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a user client',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
     #[OA\Tag(name: 'User clients')]
     public function edit(
         UserClient $userClient,
@@ -161,6 +190,10 @@ class UserClientController extends AbstractController
      * This call deletes a user client by id.
      */
     #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
+    #[OA\Response(
+        response: 204,
+        description: 'Returns status 204 : no content',
+    )]
     #[OA\Tag(name: 'User clients')]
     public function delete(
         UserClient $userClient,

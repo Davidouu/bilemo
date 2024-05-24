@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class MobileController extends AbstractController
 {
@@ -23,6 +24,14 @@ class MobileController extends AbstractController
      * This call returns a list of paginate mobiles, default limit is 10, and default page is 1.
      */
     #[Route('/api/mobiles', name: 'app_mobile', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a list of mobiles',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Mobile::class))
+        )
+    )]
     #[OA\Tag(name: 'Mobiles')]
     public function index(
         Request $request,
@@ -56,6 +65,14 @@ class MobileController extends AbstractController
      * This call returns a mobile by id.
      */
     #[Route('/api/mobiles/{id}', name: 'app_mobile_show', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a mobile by id',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Mobile::class))
+        )
+    )]
     #[OA\Tag(name: 'Mobiles')]
     public function show(Mobile $mobile, SerializerInterface $serializer): JsonResponse
     {
