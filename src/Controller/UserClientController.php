@@ -21,7 +21,7 @@ use OpenApi\Attributes as OA;
 class UserClientController extends AbstractController
 {
     #[Route('/api/clients', name: 'app_user_client', methods: ['GET'])]
-    #[OA\Tag(name: 'Clients d\'utilisateurs')]
+    #[OA\Tag(name: 'User clients')]
     public function index(
         Request $request,
         UserClientRepository $userClientRepository,
@@ -49,7 +49,7 @@ class UserClientController extends AbstractController
     }
 
     #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
-    #[OA\Tag(name: 'Clients d\'utilisateurs')]
+    #[OA\Tag(name: 'User clients')]
     public function show(
         UserClient $userClient,
         SerializerInterface $serializer
@@ -64,7 +64,7 @@ class UserClientController extends AbstractController
     }
 
     #[Route('/api/clients', name: 'app_user_client_create', methods: ['POST'])]
-    #[OA\Tag(name: 'Clients d\'utilisateurs')]
+    #[OA\Tag(name: 'User clients')]
     public function create(
         Request $request,
         SerializerInterface $serializer,
@@ -100,7 +100,7 @@ class UserClientController extends AbstractController
     }
 
     #[Route('/api/clients/{id}', name: 'app_user_client_edit', methods: ['PUT'])]
-    #[OA\Tag(name: 'Clients d\'utilisateurs')]
+    #[OA\Tag(name: 'User clients')]
     public function edit(
         UserClient $userClient,
         Request $request,
@@ -134,7 +134,7 @@ class UserClientController extends AbstractController
     }
 
     #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
-    #[OA\Tag(name: 'Clients d\'utilisateurs')]
+    #[OA\Tag(name: 'User clients')]
     public function delete(
         UserClient $userClient,
         EntityManagerInterface $entityManager,
