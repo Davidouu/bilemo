@@ -7,6 +7,7 @@ use App\Repository\UserClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,10 +17,37 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use OpenApi\Attributes as OA;
 
 class UserClientController extends AbstractController
 {
+    /**
+     * A list of all user clients
+     *
+     * This call returns a list of paginate user clients, default limit is 10, and default page is 1.
+     */
     #[Route('/api/clients', name: 'app_user_client', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a list of user clients',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number to retrieve',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items to retrieve per page',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Tag(name: 'User clients')]
     public function index(
         Request $request,
         UserClientRepository $userClientRepository,
@@ -37,16 +65,30 @@ class UserClientController extends AbstractController
                 $item->tag("clientsCache");
                 $item->expiresAfter(86400);
                 $context = SerializationContext::create();
-                $bookList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
+                $mobileList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
 
-                return $serializer->serialize($bookList, 'json', $context);
+                return $serializer->serialize($mobileList, 'json', $context);
             }
         );
 
         return new JsonResponse($jsonUserClients, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Show a user client
+     *
+     * This call returns a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a user client',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
+    #[OA\Tag(name: 'User clients')]
     public function show(
         UserClient $userClient,
         SerializerInterface $serializer
@@ -60,7 +102,24 @@ class UserClientController extends AbstractController
         return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Create a user client
+     *
+     * This call creates a user client.
+     */
     #[Route('/api/clients', name: 'app_user_client_create', methods: ['POST'])]
+    #[OA\Response(
+        response: 201,
+        description: 'Returns status 201 : created',
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["create"]))
+        )
+    )]
+    #[OA\Tag(name: 'User clients')]
     public function create(
         Request $request,
         SerializerInterface $serializer,
@@ -69,7 +128,7 @@ class UserClientController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         TagAwareCacheInterface $cache
     ): JsonResponse {
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $userClient = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
@@ -95,7 +154,28 @@ class UserClientController extends AbstractController
         return new JsonResponse($jsonUserClient, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
+    /**
+     * Edit a user client
+     *
+     * This call edits a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_edit', methods: ['PUT'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a user client',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["update"]))
+        )
+    )]
+    #[OA\Tag(name: 'User clients')]
     public function edit(
         UserClient $userClient,
         Request $request,
@@ -108,7 +188,7 @@ class UserClientController extends AbstractController
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $newUserClinetDatas = $serializer->deserialize($request->getContent(), UserClient::class, 'json');
 
@@ -125,10 +205,22 @@ class UserClientController extends AbstractController
         $entityManager->persist($userClient);
         $entityManager->flush();
 
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        $jsonUserClient = $serializer->serialize($userClient, 'json');
+
+        return new JsonResponse($jsonUserClient, JsonResponse::HTTP_OK, [], true);
     }
 
+    /**
+     * Delete a user client
+     *
+     * This call deletes a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
+    #[OA\Response(
+        response: 204,
+        description: 'Returns status 204 : no content',
+    )]
+    #[OA\Tag(name: 'User clients')]
     public function delete(
         UserClient $userClient,
         EntityManagerInterface $entityManager,
@@ -138,7 +230,7 @@ class UserClientController extends AbstractController
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $cache->invalidateTags(["booksCache"]);
+        $cache->invalidateTags(["clientsCache"]);
 
         $entityManager->remove($userClient);
         $entityManager->flush();

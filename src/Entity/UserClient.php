@@ -7,6 +7,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @Hateoas\Relation(
@@ -46,14 +47,17 @@ class UserClient
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un email.'])]
     #[Assert\Email(message: 'Veuillez saisir une adresse email valide.')]
+    #[Groups(['create', 'update'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un prénom.'])]
+    #[Groups(['create', 'update'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un nom.'])]
+    #[Groups(['create', 'update'])]
     private ?string $lastname = null;
 
     #[ORM\ManyToOne(inversedBy: 'userClients')]

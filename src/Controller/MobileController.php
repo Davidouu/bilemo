@@ -13,10 +13,38 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class MobileController extends AbstractController
 {
+    /**
+     * A list of all mobiles
+     *
+     * This call returns a list of paginate mobiles, default limit is 10, and default page is 1.
+     */
     #[Route('/api/mobiles', name: 'app_mobile', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a list of mobiles',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Mobile::class))
+        )
+    )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number to retrieve',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items to retrieve per page',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Tag(name: 'Mobiles')]
     public function index(
         Request $request,
         MobileRepository $mobileRepository,
@@ -34,16 +62,30 @@ class MobileController extends AbstractController
                 $item->tag("mobilesCache");
                 $item->expiresAfter(86400);
                 $context = SerializationContext::create();
-                $bookList = $mobileRepository->paginateMobiles($page, $limit);
+                $mobileList = $mobileRepository->paginateMobiles($page, $limit);
 
-                return $serializer->serialize($bookList, 'json', $context);
+                return $serializer->serialize($mobileList, 'json', $context);
             }
         );
 
         return new JsonResponse($jsonMobiles, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Show a mobile
+     *
+     * This call returns a mobile by id.
+     */
     #[Route('/api/mobiles/{id}', name: 'app_mobile_show', methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a mobile by id',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Mobile::class))
+        )
+    )]
+    #[OA\Tag(name: 'Mobiles')]
     public function show(Mobile $mobile, SerializerInterface $serializer): JsonResponse
     {
         $jsonMobile = $serializer->serialize($mobile, 'json');
