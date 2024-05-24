@@ -112,6 +112,13 @@ class UserClientController extends AbstractController
         response: 201,
         description: 'Returns status 201 : created',
     )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["create"]))
+        )
+    )]
     #[OA\Tag(name: 'User clients')]
     public function create(
         Request $request,
@@ -159,6 +166,13 @@ class UserClientController extends AbstractController
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(ref: new Model(type: UserClient::class))
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["update"]))
         )
     )]
     #[OA\Tag(name: 'User clients')]
