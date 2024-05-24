@@ -20,6 +20,11 @@ use OpenApi\Attributes as OA;
 
 class UserClientController extends AbstractController
 {
+    /**
+     * A list of all user clients
+     *
+     * This call returns a list of paginate user clients, default limit is 10, and default page is 1.
+     */
     #[Route('/api/clients', name: 'app_user_client', methods: ['GET'])]
     #[OA\Tag(name: 'User clients')]
     public function index(
@@ -48,6 +53,11 @@ class UserClientController extends AbstractController
         return new JsonResponse($jsonUserClients, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Show a user client
+     *
+     * This call returns a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_show', methods: ['GET'])]
     #[OA\Tag(name: 'User clients')]
     public function show(
@@ -63,6 +73,11 @@ class UserClientController extends AbstractController
         return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Create a user client
+     *
+     * This call creates a user client.
+     */
     #[Route('/api/clients', name: 'app_user_client_create', methods: ['POST'])]
     #[OA\Tag(name: 'User clients')]
     public function create(
@@ -99,6 +114,11 @@ class UserClientController extends AbstractController
         return new JsonResponse($jsonUserClient, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
+    /**
+     * Edit a user client
+     *
+     * This call edits a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_edit', methods: ['PUT'])]
     #[OA\Tag(name: 'User clients')]
     public function edit(
@@ -133,6 +153,11 @@ class UserClientController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
+    /**
+     * Delete a user client
+     *
+     * This call deletes a user client by id.
+     */
     #[Route('/api/clients/{id}', name: 'app_user_client_delete', methods: ['DELETE'])]
     #[OA\Tag(name: 'User clients')]
     public function delete(

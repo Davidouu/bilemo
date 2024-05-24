@@ -17,6 +17,11 @@ use OpenApi\Attributes as OA;
 
 class MobileController extends AbstractController
 {
+    /**
+     * A list of all mobiles
+     *
+     * This call returns a list of paginate mobiles, default limit is 10, and default page is 1.
+     */
     #[Route('/api/mobiles', name: 'app_mobile', methods: ['GET'])]
     #[OA\Tag(name: 'Mobiles')]
     public function index(
@@ -45,6 +50,11 @@ class MobileController extends AbstractController
         return new JsonResponse($jsonMobiles, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Show a mobile
+     *
+     * This call returns a mobile by id.
+     */
     #[Route('/api/mobiles/{id}', name: 'app_mobile_show', methods: ['GET'])]
     #[OA\Tag(name: 'Mobiles')]
     public function show(Mobile $mobile, SerializerInterface $serializer): JsonResponse
