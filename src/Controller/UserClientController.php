@@ -35,6 +35,18 @@ class UserClientController extends AbstractController
             items: new OA\Items(ref: new Model(type: UserClient::class))
         )
     )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number to retrieve',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items to retrieve per page',
+        schema: new OA\Schema(type: 'int')
+    )]
     #[OA\Tag(name: 'User clients')]
     public function index(
         Request $request,

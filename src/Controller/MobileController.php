@@ -32,6 +32,18 @@ class MobileController extends AbstractController
             items: new OA\Items(ref: new Model(type: Mobile::class))
         )
     )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number to retrieve',
+        schema: new OA\Schema(type: 'int')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items to retrieve per page',
+        schema: new OA\Schema(type: 'int')
+    )]
     #[OA\Tag(name: 'Mobiles')]
     public function index(
         Request $request,
