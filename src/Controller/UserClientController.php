@@ -150,7 +150,9 @@ class UserClientController extends AbstractController
         $entityManager->persist($userClient);
         $entityManager->flush();
 
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        $jsonUserClient = $serializer->serialize($userClient, 'json');
+
+        return new JsonResponse($jsonUserClient, JsonResponse::HTTP_OK, [], true);
     }
 
     /**
