@@ -13,10 +13,12 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use OpenApi\Attributes as OA;
 
 class MobileController extends AbstractController
 {
     #[Route('/api/mobiles', name: 'app_mobile', methods: ['GET'])]
+    #[OA\Tag(name: 'Mobiles')]
     public function index(
         Request $request,
         MobileRepository $mobileRepository,
@@ -44,6 +46,7 @@ class MobileController extends AbstractController
     }
 
     #[Route('/api/mobiles/{id}', name: 'app_mobile_show', methods: ['GET'])]
+    #[OA\Tag(name: 'Mobiles')]
     public function show(Mobile $mobile, SerializerInterface $serializer): JsonResponse
     {
         $jsonMobile = $serializer->serialize($mobile, 'json');
