@@ -65,6 +65,7 @@ class UserClientController extends AbstractController
                 $item->tag("clientsCache");
                 $item->expiresAfter(86400);
                 $context = SerializationContext::create();
+                $context->setGroups(['list']);
                 $mobileList = $userClientRepository->paginateUserClients($page, $limit, $this->getUser());
 
                 return $serializer->serialize($mobileList, 'json', $context);
@@ -97,7 +98,10 @@ class UserClientController extends AbstractController
             return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $jsonUserClient = $serializer->serialize($userClient, 'json');
+        $context = SerializationContext::create();
+        $context->setGroups(['list']);
+
+        $jsonUserClient = $serializer->serialize($userClient, 'json', $context);
 
         return new JsonResponse($jsonUserClient, Response::HTTP_OK, [], true);
     }
@@ -116,7 +120,7 @@ class UserClientController extends AbstractController
         required: true,
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["create"]))
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["list"]))
         )
     )]
     #[OA\Tag(name: 'User clients')]
@@ -143,7 +147,10 @@ class UserClientController extends AbstractController
         $entityManager->persist($userClient);
         $entityManager->flush();
 
-        $jsonUserClient = $serializer->serialize($userClient, 'json');
+        $context = SerializationContext::create();
+        $context->setGroups(['list']);
+
+        $jsonUserClient = $serializer->serialize($userClient, 'json', $context);
 
         $location = $urlGenerator->generate(
             'app_user_client_show',
@@ -172,7 +179,7 @@ class UserClientController extends AbstractController
         required: true,
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["update"]))
+            items: new OA\Items(ref: new Model(type: UserClient::class, groups: ["list"]))
         )
     )]
     #[OA\Tag(name: 'User clients')]
@@ -205,7 +212,10 @@ class UserClientController extends AbstractController
         $entityManager->persist($userClient);
         $entityManager->flush();
 
-        $jsonUserClient = $serializer->serialize($userClient, 'json');
+        $context = SerializationContext::create();
+        $context->setGroups(['list']);
+
+        $jsonUserClient = $serializer->serialize($userClient, 'json', $context);
 
         return new JsonResponse($jsonUserClient, JsonResponse::HTTP_OK, [], true);
     }

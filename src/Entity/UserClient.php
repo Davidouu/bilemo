@@ -16,6 +16,7 @@ use JMS\Serializer\Annotation\Groups;
  *          "app_user_client_show",
  *          parameters = { "id" = "expr(object.getId())" }
  *      ),
+ *      exclusion = @Hateoas\Exclusion(groups = { "list" })
  * )
  *
  * @Hateoas\Relation(
@@ -24,6 +25,7 @@ use JMS\Serializer\Annotation\Groups;
  *          "app_user_client_edit",
  *          parameters = { "id" = "expr(object.getId())" }
  *      ),
+ *      exclusion = @Hateoas\Exclusion(groups = { "list" })
  * )
  *
  * @Hateoas\Relation(
@@ -32,6 +34,7 @@ use JMS\Serializer\Annotation\Groups;
  *          "app_user_client_delete",
  *          parameters = { "id" = "expr(object.getId())" }
  *      ),
+ *      exclusion = @Hateoas\Exclusion(groups = { "list"})
  * )
  *
  */
@@ -47,17 +50,17 @@ class UserClient
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un email.'])]
     #[Assert\Email(message: 'Veuillez saisir une adresse email valide.')]
-    #[Groups(['create', 'update'])]
+    #[Groups(['list'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un prénom.'])]
-    #[Groups(['create', 'update'])]
+    #[Groups(['list'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(['message' => 'Vous devez inscrire un nom.'])]
-    #[Groups(['create', 'update'])]
+    #[Groups(['list'])]
     private ?string $lastname = null;
 
     #[ORM\ManyToOne(inversedBy: 'userClients')]
