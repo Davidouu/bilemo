@@ -95,7 +95,10 @@ class UserClientController extends AbstractController
         SerializerInterface $serializer
     ): JsonResponse {
         if ($userClient->getUser() !== $this->getUser()) {
-            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(
+                ['status' => 403, 'message' => 'Vous n\'avez pas accès à cette ressource'],
+                JsonResponse::HTTP_FORBIDDEN
+            );
         }
 
         $context = SerializationContext::create();
@@ -192,7 +195,10 @@ class UserClientController extends AbstractController
         TagAwareCacheInterface $cache
     ): JsonResponse {
         if ($userClient->getUser() !== $this->getUser()) {
-            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(
+                ['status' => 403, 'message' => 'Vous n\'avez pas accès à cette ressource'],
+                JsonResponse::HTTP_FORBIDDEN
+            );
         }
 
         $cache->invalidateTags(["clientsCache"]);
@@ -237,7 +243,10 @@ class UserClientController extends AbstractController
         TagAwareCacheInterface $cache
     ): JsonResponse {
         if ($userClient->getUser() !== $this->getUser()) {
-            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(
+                ['status' => 403, 'message' => 'Vous n\'avez pas accès à cette ressource'],
+                JsonResponse::HTTP_FORBIDDEN
+            );
         }
 
         $cache->invalidateTags(["clientsCache"]);
